@@ -1,5 +1,5 @@
 ---
-title: Mi Proyecto Increíble
+Título: Mi Proyecto Increíble
 ---
 
 # Mi Proyecto Increíble
