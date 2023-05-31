@@ -22,7 +22,7 @@ Título: Mi Proyecto Increíble
 
 El propósito de este proyecto es proporcionar una solución innovadora y eficiente para hacer un delicioso pinto. Con esta aplicación, los usuarios podrán seguir los pasos y hacer todo lo necesario. Estoy emocionado de compartir esta solución con la comunidad y espero que sea de gran utilidad.
 
-## utilidad
+## Utilidad
 
 Ayudar a todas esas personas que no sepan la correcta preparación del famoso pinto costarricense
 
