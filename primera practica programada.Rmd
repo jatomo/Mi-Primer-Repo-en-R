@@ -73,15 +73,45 @@ datos_netflix_sin_lanzamiento <- datos_netflix_sin_vacios |>
 
 ```
 
-f. Haga una inspección de las variables type y country para determinar si hay observaciones mal escritas o
-escritas de diferentes maneras. Si es ahí, haga la limpieza para poder homogenizar esos datos. (10pts)
-
 
 g. Para todas las columnas de tipo carácter, en donde haya NA, coloque “Sin información”. (4pts)
+
+```{r}
+glimpse(datos_netflix_sin_lanzamiento)
+
+datos_netflixz_sin_NA <- datos_netflix_sin_lanzamiento |> 
+  mutate_at(vars(show_id,tipo,título,director,país,fecha_agregada,rating,duracion,categorias), ~ifelse(is.na(.), "Sin información", .)) 
+
+```
 
 h. Añada a su conjunto de datos una nueva columna llamada anyo que indique el año en que el show o
 película fue añadido a Netflix. Añada también una columna llamada mes que indique el mes en que el
 show o película fue añadido a Netflix. (6pts)
+
+```{r}
+datos_netflix_fechas<- datos_netflixz_sin_NA |> 
+  mutate(fecha_agregada = dmy(fecha_agregada))
+
+glimpse(datos_netflix_fechas)
+```
+
+```{r}
+datos_netflix_mes_año <- datos_netflix_fechas |> 
+ mutate(anyo = year(fecha_agregada)) |> 
+ mutate(mes_añadido = month(fecha_agregada))
+```
+
+f. Haga una inspección de las variables type y country para determinar si hay observaciones mal escritas o
+escritas de diferentes maneras. Si es ahí, haga la limpieza para poder homogenizar esos datos. (10pts)
+```{r}
+datos_netflix_sin_vacios |> 
+  select(tipo, país)
+?unique
+
+unique(datos_netflix_sin_lanzamiento$tipo)
+unique(datos_netflix_sin_lanzamiento$país)
+
+```
 
 Una vez que haya terminado la limpieza anterior, responda las siguientes preguntas:
 
