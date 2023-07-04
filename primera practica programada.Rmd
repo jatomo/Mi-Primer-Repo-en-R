@@ -104,12 +104,15 @@ datos_netflix_mes_año <- datos_netflix_fechas |>
 f. Haga una inspección de las variables type y country para determinar si hay observaciones mal escritas o
 escritas de diferentes maneras. Si es ahí, haga la limpieza para poder homogenizar esos datos. (10pts)
 ```{r}
-datos_netflix_sin_vacios |> 
-  select(tipo, país)
-?unique
 
-unique(datos_netflix_sin_lanzamiento$tipo)
-unique(datos_netflix_sin_lanzamiento$país)
+unique(datos_netflix_mes_año$tipo)
+unique(datos_netflix_mes_año$país)
+
+datos_netflix_final <- datos_netflix_mes_año |>
+  mutate(across(c(tipo), function(x) ifelse(x == "movie",  "Movie", x))) |>  mutate(across(c(tipo), function(x) ifelse(x ==  "Movi", "Movie", x))) |>  mutate(across(c(tipo), function(x) ifelse(x == "tv show", "TV Show", x)))
+
+datos_netflix_final <- datos_netflix_mes_año |>
+  mutate(across(c(país), function(x) ifelse(x == "united states",  "United States", x))) |>   mutate(across(c(país), function(x) ifelse(x == "United State",  "United States", x))) |>    mutate(across(c(país), function(x) ifelse(x == "india",  "India", x))) |>    mutate(across(c(país), function(x) ifelse(x == "pakistan",  "Pakistan", x))) |>   mutate(across(c(país), function(x) ifelse(x == "canada",  "Canada", x)))
 
 ```
 
