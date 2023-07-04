@@ -15,6 +15,7 @@ library(tidyr)
 library(janitor)
 library(lubridate) 
 library(read_csv2)
+library(ggplot2)
 ```
 
 Instrucciones:
@@ -119,14 +120,39 @@ datos_netflix_final <- datos_netflix_mes_año |>
 Una vez que haya terminado la limpieza anterior, responda las siguientes preguntas:
 
 i. Cuántas películas y shows de TV hay por país? (4pts)
+```{r}
+cantidad_peliculas_tvshow <- datos_netflix_final |> 
+  group_by(tipo,país) |> 
+  summarise(count = n())
+
+```
+
+```{r}
+ggplot(cantidad_peliculas_tvshow, aes(x = país, y = count, fill = tipo)) +
+  geom_bar(stat = "identity", position = "dodge")
+
+```
 
 j. Cuáles son los 10 directores con mayor cantidad de películas (sin contar shows de TV) en Netflix?
 Ordénelos por orden descendente. (4pts)
+
+```{r}
+
+```
 
 
 k. Cuáles son los 10 directores con mayor cantidad de shows de TV (sin contar películas) en Netflix?
 Ordénelos por orden descendente. (4pts)
 
+```{r}
+
+```
+
+
 l. Obtenga la lista de películas y shows de TV que se añadieron en marzo del año 2020. Cuántos fueron?
 (4pts)
+
+```{r}
+
+```
 
