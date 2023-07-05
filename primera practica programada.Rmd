@@ -137,6 +137,8 @@ j. Cuáles son los 10 directores con mayor cantidad de películas (sin contar sh
 Ordénelos por orden descendente. (4pts)
 
 ```{r}
+peliculas <-  datos_netflix_final |> 
+filter(tipo == Movie)
 
 ```
 
