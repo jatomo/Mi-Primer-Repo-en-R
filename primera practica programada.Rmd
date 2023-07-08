@@ -16,6 +16,7 @@ library(janitor)
 library(lubridate) 
 library(read_csv2)
 library(ggplot2)
+library(tidyverse)
 ```
 
 Instrucciones:
@@ -110,36 +111,46 @@ unique(datos_netflix_mes_año$tipo)
 unique(datos_netflix_mes_año$país)
 
 datos_netflix_final <- datos_netflix_mes_año |>
-  mutate(across(c(tipo), function(x) ifelse(x == "movie",  "Movie", x))) |>  mutate(across(c(tipo), function(x) ifelse(x ==  "Movi", "Movie", x))) |>  mutate(across(c(tipo), function(x) ifelse(x == "tv show", "TV Show", x)))
-
-datos_netflix_final <- datos_netflix_mes_año |>
-  mutate(across(c(país), function(x) ifelse(x == "united states",  "United States", x))) |>   mutate(across(c(país), function(x) ifelse(x == "United State",  "United States", x))) |>    mutate(across(c(país), function(x) ifelse(x == "india",  "India", x))) |>    mutate(across(c(país), function(x) ifelse(x == "pakistan",  "Pakistan", x))) |>   mutate(across(c(país), function(x) ifelse(x == "canada",  "Canada", x)))
+mutate(across(c(tipo), function(x) ifelse(x == "movie",  "Movie", x)))    |>  mutate(across(c(tipo), function(x) ifelse(x == "Movi",   "Movie", x)))    |>  mutate(across(c(tipo), function(x) ifelse(x == "tv show", "TV Show", x))) |>  mutate(across(c(país), function(x) ifelse(x == "united states",  "United States", x))) |>  
+mutate(across(c(país), function(x) ifelse(x == "United State",  "United States", x))) |>   
+mutate(across(c(país), function(x) ifelse(x == "india",  "India", x)))      |>    mutate(across(c(país), function(x) ifelse(x == "pakistan",  "Pakistan", x)))|>   mutate(across(c(país), function(x) ifelse(x == "canada",  "Canada", x)))
 
 ```
 
 Una vez que haya terminado la limpieza anterior, responda las siguientes preguntas:
 
 i. Cuántas películas y shows de TV hay por país? (4pts)
+
+La tabla acontinuación muestra la cantidad de peliculas y tv shows por país, mostrando que el que más sobresale en ambas categorias es Estados Unidos
+
 ```{r}
 cantidad_peliculas_tvshow <- datos_netflix_final |> 
   group_by(tipo,país) |> 
-  summarise(count = n())
+   summarise(count = n(), .groups = "drop") |> 
+  pivot_wider(names_from = tipo, values_from = count) |> 
+  ungroup()
 
 ```
 
-```{r}
-ggplot(cantidad_peliculas_tvshow, aes(x = país, y = count, fill = tipo)) +
-  geom_bar(stat = "identity", position = "dodge")
-
-```
 
 j. Cuáles son los 10 directores con mayor cantidad de películas (sin contar shows de TV) en Netflix?
 Ordénelos por orden descendente. (4pts)
 
-```{r}
-peliculas <-  datos_netflix_final |> 
-filter(tipo == Movie)
+En el siguiente objeto se presentan los 10 directores con más peliculas
 
+```{r}
+
+peliculas <- datos_netflix_final |> 
+filter(tipo == "Movie") 
+
+peliculas_directores <- peliculas |> 
+  group_by(director) |> 
+   summarise(count = n()) |> 
+  ungroup() 
+
+top_10_directores_peliculas <- total_directores |> 
+  filter(director != "Sin informacion") |>
+  top_n(10, count)
 ```
 
 
@@ -147,6 +158,16 @@ k. Cuáles son los 10 directores con mayor cantidad de shows de TV (sin contar p
 Ordénelos por orden descendente. (4pts)
 
 ```{r}
+TV_Shows <- datos_netflix_final |> 
+filter(tipo == "TV Show") 
+
+TVSHOWS_directores <- TV_Shows |> 
+  group_by(director) |> 
+   summarise(count = n()) |> 
+  ungroup() 
+
+top_10_directores_tvshows <- TVSHOWS_directores |> 
+  top_n(10, count)
 
 ```
 
