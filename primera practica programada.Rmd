@@ -49,6 +49,7 @@ categorias = listed_in)
 ```
 
 c. Elimine filas duplicadas. (2pts)
+
 ```{r}
 filas_duplicadas <- datos_tarea_español |> 
   janitor::get_dupes()
@@ -105,6 +106,7 @@ datos_netflix_mes_año <- datos_netflix_fechas |>
 
 f. Haga una inspección de las variables type y country para determinar si hay observaciones mal escritas o
 escritas de diferentes maneras. Si es ahí, haga la limpieza para poder homogenizar esos datos. (10pts)
+
 ```{r}
 
 unique(datos_netflix_mes_año$tipo)
@@ -148,7 +150,7 @@ peliculas_directores <- peliculas |>
    summarise(count = n()) |> 
   ungroup() 
 
-top_10_directores_peliculas <- total_directores |> 
+top_10_directores_peliculas <- peliculas_directores |> 
   filter(director != "Sin informacion") |>
   top_n(10, count)
 ```
@@ -164,10 +166,10 @@ filter(tipo == "TV Show")
 TVSHOWS_directores <- TV_Shows |> 
   group_by(director) |> 
    summarise(count = n()) |> 
-  ungroup() 
+  ungroup() |>  arrange(desc(count))
 
-top_10_directores_tvshows <- TVSHOWS_directores |> 
-  top_n(10, count)
+top_10_directores_TVSHOWS <- TVSHOWS_directores |> 
+   top_n(10, count)
 
 ```
 
@@ -175,7 +177,13 @@ top_10_directores_tvshows <- TVSHOWS_directores |>
 l. Obtenga la lista de películas y shows de TV que se añadieron en marzo del año 2020. Cuántos fueron?
 (4pts)
 
+Fueron 49.
+
 ```{r}
 
+peliculas_showtv_marzo_2020 <- datos_netflix_final |> 
+  filter(month(fecha_agregada) == 3 & year(fecha_agregada) == 2020)
+
+numero_total <- nrow(peliculas_showtv_marzo_2020)
 ```
 
