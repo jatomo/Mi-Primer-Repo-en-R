@@ -108,37 +108,35 @@ tabla_AQI_altos <- tail(promedio_AQI_pais, 10) |>
 ```
 
 
-e. Para los 10 países con los valores promedios más altos de AQI, muestrelos en un mapa de leaflet usando
+e. Para las 10 ciudades con los valores promedios más altos de AQI, muestrelos en un mapa de leaflet usando
 addMarkers o un addCircles. En el popup debe colocar el valor promedio del AQI. (6pts)
 ```{r}
 promedio_ciudad <- datos_airquality |> 
-  group_by(City) |> 
+  group_by(City, lng, lat) |> 
   summarise(AQI_pROMEDIO_City = mean(`AQI Value`, na.rm = TRUE)) |> 
   arrange(AQI_pROMEDIO_City)
 
-
+top_10_ciudades <- promedio_ciudad |> 
+  arrange(desc(AQI_pROMEDIO_City)) |> 
+  head(10)
 
 ```
 
+```{r}
+
+mapa_ciudades_AQIALTO <- top_10_ciudades |> 
+  leaflet() |> 
+  addTiles() |> 
+  addMarkers(lng = ~lng, lat = ~lat, popup = ~AQI_pROMEDIO_City)
+
+mapa_ciudades_AQIALTO
+```
 
 f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
 los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
 o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
-```{r}J
+```{r}
 
-```promedio_ciudad <- datos_airquality |> 
-  group_by(City) |> 
-  summarise(AQI_pROMEDIO_City = mean(AQI_Value, na.rm = TRUE)) |> 
-  arrange(AQI_pROMEDIO_City)
-
-```
-
-
-f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
-los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
-o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
-```{r}J
-
-```
+``
 
 
