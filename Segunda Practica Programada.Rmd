@@ -38,7 +38,7 @@ com/isa229/programacion_analisis_datos_ii/main/air_quality_index.csv”. (1pto)
 
 ```{r}
 data_airquality <- "https://raw.githubusercontent.com/isa229/programacion_analisis_datos_ii/main/air_quality_index.csv"
-datos <- read_csv(data_airquality)
+datos_airquality <- read_csv(data_airquality)
 
 head(datos_airquality)
 
@@ -49,6 +49,7 @@ glimpse(datos_airquality)
 
 Este conjunto de datos contiene información acerca del índice de calidad del aire (AQI) de distintas ciudades
 alrededor del mundo. Las coordenadas geográficas de estas se encuentran como lat (latitud) y lng (longitud).
+
 
 b. Cuántas categorías diferentes de AQI (AQI Category) hay en este conjunto de datos? Cuáles son?
 (2pts)
@@ -71,20 +72,6 @@ Adicionalmente, traduzca las categorías a español, por ejemplo “Good” ser�
 tabla con el paquete gt, añadiendo títulos y subtítulos (10pts).
 
 ```{r}
-conteo_ciudades4 <- datos_airquality |> 
-  group_by(´AQI Category´) |> 
-  summarise(cantidad_ciudades = n()) |> 
-mutate( AQI Category' = case_when(
-  `AQI Category` == "Good" ~ "Bueno",
-    `AQI Category` == "Moderate" ~ "Moderado",
-    `AQI Category` == "Unhealthy for Sensitive Groups" ~ "Insalubre para grupos sensibles",
-    `AQI Category` == "Unhealthy" ~ "Insalubre",
-    `AQI Category` == "Very Unhealthy" ~ "Muy insalubre",
-    `AQI Category` == "Hazardous" ~ "Peligroso",
-    TRUE ~ as.character(`AQI Category`)  
-  ))
-  
-))
 conteo_ciudades <- datos_airquality |> 
   group_by(`AQI Category`) |> 
   summarise(Cantidad_ciudades = n()) |> 
@@ -106,11 +93,30 @@ estas tablas con el paquete gt, añadiendo títulos y subtítulos (10pts)
 
 ```{r}
 
+promedio_AQI_pais <- datos_airquality |> 
+  group_by(Country) |> 
+  summarise(AQI_Promedio = mean(`AQI Value`, na.rm = TRUE))
+
+tabla_AQI_bajos <- head(promedio_AQI_pais, 10) |>
+  gt() |> 
+  tab_header("Los 10 países con los valores más bajos de AQI")
+
+tabla_AQI_altos <- tail(promedio_AQI_pais, 10) |>
+  gt() |> 
+  tab_header("Los 10 países con los valores más altos de AQI")
+
 ```
+
 
 e. Para los 10 países con los valores promedios más altos de AQI, muestrelos en un mapa de leaflet usando
 addMarkers o un addCircles. En el popup debe colocar el valor promedio del AQI. (6pts)
 ```{r}
+promedio_ciudad <- datos_airquality |> 
+  group_by(City) |> 
+  summarise(AQI_pROMEDIO_City = mean(`AQI Value`, na.rm = TRUE)) |> 
+  arrange(AQI_pROMEDIO_City)
+
+
 
 ```
 
@@ -118,7 +124,20 @@ addMarkers o un addCircles. En el popup debe colocar el valor promedio del AQI. 
 f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
 los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
 o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
-```{r}
+```{r}J
+
+```promedio_ciudad <- datos_airquality |> 
+  group_by(City) |> 
+  summarise(AQI_pROMEDIO_City = mean(AQI_Value, na.rm = TRUE)) |> 
+  arrange(AQI_pROMEDIO_City)
+
+```
+
+
+f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
+los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
+o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
+```{r}J
 
 ```
 
