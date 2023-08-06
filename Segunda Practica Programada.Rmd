@@ -65,7 +65,8 @@ print(categorias_unicas)
 [3] "Unhealthy"                     
 [4] "Very Unhealthy"                
 [5] "Unhealthy for Sensitive Groups"
-[6] "Hazardous"   
+[6] "Hazardous" 
+
 ```
 
 c. Cree una tabla que indique la cantidad de ciudades que hay en cada categoría de AQI (AQI Category).
@@ -168,27 +169,30 @@ datos_airquality$`AQI Category` <- datos_airquality$`AQI Category` |>
          "Moderate" = "Moderado",
          "Unhealthy" = "No_saludable",
          "Very Unhealthy" = "Muy_insalubre",
-         "Unhealthy for Sensitive Groups" = "No_saludable_sensibles",
+         "Unhealthy for Sensitive Groups" = "IG_sencibles",
          "Hazardous" = "Peligroso")
 ```
 
 ```{r}
 Datos_AQI_Quality_Excel <- list("Bueno" = Good <-datos_airquality |> 
     filter(`AQI Category` == "Bueno"),
-    "Insalubre"= Unhealthy <- datos_airquality |> 
-     filter(`AQI Category` == "Moderado"),
+    
      "Moderado"= Moderate <- datos_airquality |> 
       filter(`AQI Category` == "Moderado"),
+    
+    "No_saludable"= No_saludable <- datos_airquality |> 
+     filter(`AQI Category` == "No_saludable"),
+    
+     "Muy_insalubre"=  Muy_insalubre <- datos_airquality |> 
+     filter(`AQI Category` == "Muy_insalubre"),
+    
      "Peligroso" = Peligroso <- datos_airquality|> 
       filter(`AQI Category` == "Peligroso"),
-     "No saludable" = No_saludable <- datos_airquality |> 
-      filter(`AQI Category` == "No_saludable"),
-    "Muy insalubre" = Muy_insalubre <- datos_airquality|> 
-      filter(`AQI Category` == "Muy_insalubre"),
-    "No_saludable_sensibles" = No_saludable_sensibles <- datos_airquality |> 
-      filter(`AQI Category` == "No_saludable_sensibles"))
+    
+    "IG_sencibles" = IG_sencibles <- datos_airquality |> 
+      filter(`AQI Category` == "IG_sencibles"))
 
-write_xlsx(datos_categoria_AQI_excel,path = "Datos/Datos_AQI_Quality_Excel.xlsx")
+write_xlsx(Datos_AQI_Quality_Excel,path = "Datos/Datos_AQI_Quality_Excel.xlsx")
 ```
 
 
