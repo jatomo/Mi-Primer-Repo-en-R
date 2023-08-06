@@ -1,0 +1,198 @@
+---
+title: "Segunda Práctica Programada"
+author: "Jahaira Mora Corrales"
+date: "2023-07-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(readr)
+library(dplyr)
+library(janitor)
+library(stringr)
+library(gt)
+library(writexl)
+```
+
+Práctica programada 2
+
+La presente práctica programada deberá resolverse de manera individual utilizando control de versiones (git),
+github y RStudio.
+Puede utilizar su repositorio de github llamado “mi_primer_repo” que creamos durante clase, o si gusta
+puede crear otro para este propósito (si decide crear uno nuevo, recuerde que debe realizar entonces los pasos
+de clonarlo en su computadora local y autentificarse como aprendimos en clase).
+
+Recuerde crear al menos el tiquete correspondiente a la resolución de la práctica programada 2, trabajar
+bajo la rama correspondiente y hacer commit y push de manera frecuente. Además, cuando ya tenga lista
+su solución, debe hacer una SF para integrar el código en main.
+La manera de entregar la tarea será enviando por google classroom el link al repositorio de github donde fue
+resuelta la práctica programada.
+
+Instrucciones:
+
+a. Cree un archivo Rmarkdown para resolver esta práctica programada. En el chunk de setup cargue las
+librerías que considere necesarias para resolver la práctica. Los datos para trabajar puede cargarlos con
+la función read_csv de readr directamente de la siguiente dirección: “https://raw.githubusercontent.
+com/isa229/programacion_analisis_datos_ii/main/air_quality_index.csv”. (1pto)
+
+```{r}
+data_airquality <- "https://raw.githubusercontent.com/isa229/programacion_analisis_datos_ii/main/air_quality_index.csv"
+datos_airquality <- read_csv(data_airquality)
+
+head(datos_airquality)
+
+glimpse(datos_airquality)
+
+```
+
+
+Este conjunto de datos contiene información acerca del índice de calidad del aire (AQI) de distintas ciudades
+alrededor del mundo. Las coordenadas geográficas de estas se encuentran como lat (latitud) y lng (longitud).
+
+
+b. Cuántas categorías diferentes de AQI (AQI Category) hay en este conjunto de datos? Cuáles son?
+(2pts)
+
+```{r}
+categorias_unicas <-unique(datos_airquality$`AQI Category`) 
+cantidad_categorias <- length(categorias_unicas)
+
+print(categorias_unicas)
+[1] "Moderate"                      
+[2] "Good"                          
+[3] "Unhealthy"                     
+[4] "Very Unhealthy"                
+[5] "Unhealthy for Sensitive Groups"
+[6] "Hazardous" 
+
+```
+
+c. Cree una tabla que indique la cantidad de ciudades que hay en cada categoría de AQI (AQI Category).
+Adicionalmente, traduzca las categorías a español, por ejemplo “Good” sería “Bueno”. Presente esta
+tabla con el paquete gt, añadiendo títulos y subtítulos (10pts).
+
+```{r}
+conteo_ciudades <- datos_airquality |> 
+  group_by(`AQI Category`) |> 
+  summarise(Cantidad_ciudades = n()) |> 
+  mutate(`AQI Category` = case_when(
+    `AQI Category` == "Good" ~ "Bueno",
+    `AQI Category` == "Moderate" ~ "Moderado",
+    `AQI Category` == "Unhealthy for Sensitive Groups" ~ "Insalubre para grupos sensibles",
+    `AQI Category` == "Unhealthy" ~ "Insalubre",
+    `AQI Category` == "Very Unhealthy" ~ "Muy insalubre",
+    `AQI Category` == "Hazardous" ~ "Peligroso",
+    TRUE ~ as.character(`AQI Category`)  
+  ))
+```
+
+
+d. Obtenga el promedio del AQI Value por país, y cree 2 tablas: Una que muestre los 10 países con los
+valores más bajos de AQI, y otra que muestre los 10 países con los valores más altos de AQI. Presente
+estas tablas con el paquete gt, añadiendo títulos y subtítulos (10pts)
+
+```{r}
+promedio_AQI_pais <- datos_airquality |> 
+  group_by(Country) |> 
+  summarise(AQI_Promedio = mean(`AQI Value`, na.rm = TRUE))
+```
+
+```{r}
+valores_masaltos_pais <- promedio_AQI_pais |> 
+  arrange(desc(AQI_Promedio)) |>  
+  head(10)
+```
+
+```{r}
+tabla_AQI_altos <- valores_masaltos_pais |>
+  gt() |>  
+  tab_header( 
+    title = "Los 10 países con los valores más altos de AQI",
+    subtitle = "Paises más contaminados"
+    )
+  
+tabla_AQI_altos
+```
+
+
+```{r}
+
+valores_masbajos_pais <- promedio_AQI_pais |> 
+  arrange(AQI_Promedio) |>  
+  head(10)
+
+tabla_AQI_bajos <- valores_masbajos_pais |>
+  gt() |>  
+  tab_header( 
+    title = "Los 10 países con los valores más bajos de AQI",
+    subtitle = "Paises menos contaminados"
+    )
+  
+tabla_AQI_bajos
+
+```
+
+
+e. Para las 10 ciudades con los valores promedios más altos de AQI, muestrelos en un mapa de leaflet usando
+addMarkers o un addCircles. En el popup debe colocar el valor promedio del AQI. (6pts)
+```{r}
+promedio_ciudad <- datos_airquality |> 
+  group_by(City, lng, lat) |> 
+  summarise(AQI_pROMEDIO_City = mean(`AQI Value`, na.rm = TRUE)) |> 
+  arrange(AQI_pROMEDIO_City)
+
+top_10_ciudades <- promedio_ciudad |> 
+  arrange(desc(AQI_pROMEDIO_City)) |> 
+  head(10)
+
+```
+
+```{r}
+
+mapa_ciudades_AQIALTO <- top_10_ciudades |> 
+  leaflet() |> 
+  addTiles() |> 
+  addMarkers(lng = ~lng, lat = ~lat, popup = ~ City)
+
+mapa_ciudades_AQIALTO
+```
+
+f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
+los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
+o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
+
+```{r}
+datos_airquality$`AQI Category` <- datos_airquality$`AQI Category` |> 
+  recode("Good" = "Bueno",
+         "Moderate" = "Moderado",
+         "Unhealthy" = "No_saludable",
+         "Very Unhealthy" = "Muy_insalubre",
+         "Unhealthy for Sensitive Groups" = "IG_sencibles",
+         "Hazardous" = "Peligroso")
+```
+
+```{r}
+Datos_AQI_Quality_Excel <- list("Bueno" = Good <-datos_airquality |> 
+    filter(`AQI Category` == "Bueno"),
+    
+     "Moderado"= Moderate <- datos_airquality |> 
+      filter(`AQI Category` == "Moderado"),
+    
+    "No_saludable"= No_saludable <- datos_airquality |> 
+     filter(`AQI Category` == "No_saludable"),
+    
+     "Muy_insalubre"=  Muy_insalubre <- datos_airquality |> 
+     filter(`AQI Category` == "Muy_insalubre"),
+    
+     "Peligroso" = Peligroso <- datos_airquality|> 
+      filter(`AQI Category` == "Peligroso"),
+    
+    "IG_sencibles" = IG_sencibles <- datos_airquality |> 
+      filter(`AQI Category` == "IG_sencibles"))
+
+write_xlsx(Datos_AQI_Quality_Excel,path = "Datos/Datos_AQI_Quality_Excel.xlsx")
+```
+
+
