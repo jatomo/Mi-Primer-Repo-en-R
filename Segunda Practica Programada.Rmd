@@ -13,6 +13,7 @@ library(dplyr)
 library(janitor)
 library(stringr)
 library(gt)
+library(writexl)
 ```
 
 Práctica programada 2
@@ -92,18 +93,43 @@ valores más bajos de AQI, y otra que muestre los 10 países con los valores má
 estas tablas con el paquete gt, añadiendo títulos y subtítulos (10pts)
 
 ```{r}
-
 promedio_AQI_pais <- datos_airquality |> 
   group_by(Country) |> 
   summarise(AQI_Promedio = mean(`AQI Value`, na.rm = TRUE))
+```
 
-tabla_AQI_bajos <- head(promedio_AQI_pais, 10) |>
-  gt() |> 
-  tab_header("Los 10 países con los valores más bajos de AQI")
+```{r}
+valores_masaltos_pais <- promedio_AQI_pais |> 
+  arrange(desc(AQI_Promedio)) |>  
+  head(10)
+```
 
-tabla_AQI_altos <- tail(promedio_AQI_pais, 10) |>
-  gt() |> 
-  tab_header("Los 10 países con los valores más altos de AQI")
+```{r}
+tabla_AQI_altos <- valores_masaltos_pais |>
+  gt() |>  
+  tab_header( 
+    title = "Los 10 países con los valores más altos de AQI",
+    subtitle = "Paises más contaminados"
+    )
+  
+tabla_AQI_altos
+```
+
+
+```{r}
+
+valores_masbajos_pais <- promedio_AQI_pais |> 
+  arrange(AQI_Promedio) |>  
+  head(10)
+
+tabla_AQI_bajos <- valores_masbajos_pais |>
+  gt() |>  
+  tab_header( 
+    title = "Los 10 países con los valores más bajos de AQI",
+    subtitle = "Paises menos contaminados"
+    )
+  
+tabla_AQI_bajos
 
 ```
 
@@ -127,7 +153,7 @@ top_10_ciudades <- promedio_ciudad |>
 mapa_ciudades_AQIALTO <- top_10_ciudades |> 
   leaflet() |> 
   addTiles() |> 
-  addMarkers(lng = ~lng, lat = ~lat, popup = ~AQI_pROMEDIO_City)
+  addMarkers(lng = ~lng, lat = ~lat, popup = ~ City)
 
 mapa_ciudades_AQIALTO
 ```
@@ -135,8 +161,34 @@ mapa_ciudades_AQIALTO
 f. Escriba el código que exporte los datos en un excel, de tal manera que cada pestaña tenga solamente
 los datos de una categoría de AQI. (Es decir una pestaña para las ciudades cuya categoría es “Good”
 o “Buena”, otra para los que la categoría es “Moderate” y así para cada cateoría). (5pts)
-```{r}
 
-``
+```{r}
+datos_airquality$`AQI Category` <- datos_airquality$`AQI Category` |> 
+  recode("Good" = "Bueno",
+         "Moderate" = "Moderado",
+         "Unhealthy" = "No_saludable",
+         "Very Unhealthy" = "Muy_insalubre",
+         "Unhealthy for Sensitive Groups" = "No_saludable_sensibles",
+         "Hazardous" = "Peligroso")
+```
+
+```{r}
+Datos_AQI_Quality_Excel <- list("Bueno" = Good <-datos_airquality |> 
+    filter(`AQI Category` == "Bueno"),
+    "Insalubre"= Unhealthy <- datos_airquality |> 
+     filter(`AQI Category` == "Moderado"),
+     "Moderado"= Moderate <- datos_airquality |> 
+      filter(`AQI Category` == "Moderado"),
+     "Peligroso" = Peligroso <- datos_airquality|> 
+      filter(`AQI Category` == "Peligroso"),
+     "No saludable" = No_saludable <- datos_airquality |> 
+      filter(`AQI Category` == "No_saludable"),
+    "Muy insalubre" = Muy_insalubre <- datos_airquality|> 
+      filter(`AQI Category` == "Muy_insalubre"),
+    "No_saludable_sensibles" = No_saludable_sensibles <- datos_airquality |> 
+      filter(`AQI Category` == "No_saludable_sensibles"))
+
+write_xlsx(datos_categoria_AQI_excel,path = "Datos/Datos_AQI_Quality_Excel.xlsx")
+```
 
 
